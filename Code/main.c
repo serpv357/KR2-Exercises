@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "chapter_5/Exercise_5_2.h"
+#include "chapter_5/exercise_5_3.h"
 
 int main() {
     example();

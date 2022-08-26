@@ -1,16 +1,12 @@
 
-#ifndef EXERCISE_5_2_H
-#define EXERCISE_5_2_H
+#ifndef CODE_EXERCISE_5_1_H
+#define CODE_EXERCISE_5_1_H
 
 #include <ctype.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include <math.h>
 
 // Problem Statement:
-// Write getfloat, the floating-point analog of getint. What type does getfloat return as its function value?
-// Answer:
-// getfloat returns an int with either the integer value of the last read character (if successful), or 0
+// As written, getint treats a + or - not followed by a digit as a valid representation of zero. Fix it to push such a character back on the input.
 
 #define BUFSIZE 100
 #define SIZE 4
@@ -45,7 +41,12 @@ int getint(int *pn) {
     sign = (c == '-') ? -1 : 1;
     if (c == '+' || c == '-')
         c = getch();
-    for (*pn = 0; isdigit(c), c = getch())
+    if (!isdigit(c)) {
+        ungetch(c);
+        return 0;
+    }
+
+    for (*pn = 0; isdigit(c); c = getch())
         *pn = 10 * *pn + (c - '0');
     *pn *= sign;
     if (c != EOF)
@@ -53,32 +54,19 @@ int getint(int *pn) {
     return c;
 }
 
-int getfloat(float *pn) {
-    int c;
-    int sign;
-
-    while (isspace(c = getch()));
-    if (!isdigit(c) && c != EOF && c != '+' && c != '-' && c != '.') {
-        ungetch(c);
+int getintnew(int *pn) {
+    int c, sign;
+    while (isspace(c = getch()))   /* skip white space */
+        ;
+    if (!isdigit(c) && c != EOF && c != '+' && c != '-') {
+        ungetch(c);  /* it is not a number */
         return 0;
     }
     sign = (c == '-') ? -1 : 1;
     if (c == '+' || c == '-')
         c = getch();
-    if (!isdigit(c) && c != '.') {
-        ungetch(c);
-        return 0;
-    }
-    for (*pn = 0; isdigit(c); c = getch()) {
+    for (*pn = 0; isdigit(c); c = getch())
         *pn = 10 * *pn + (c - '0');
-    }
-    if (c == '.') {
-        c = getch();
-        for (float i = 10; isdigit(c); c = getch()) {
-            *pn = *pn + ((float) (c - '0')) / i;
-            i *= 10;
-        }
-    }
     *pn *= sign;
     if (c != EOF)
         ungetch(c);
@@ -88,8 +76,7 @@ int getfloat(float *pn) {
 void example() {
     // Each entered float is put into this new array
     int n;
-    float array[SIZE];
-    for (n = 0; n < SIZE && getfloat(&array[n]) != EOF; n++);
+    int array[SIZE];
+    for (n = 0; n < SIZE && getintnew(&array[n]) != EOF; n++);
 }
-
-#endif EXERCISE_5_2_H
+#endif //CODE_EXERCISE_5_1_H
