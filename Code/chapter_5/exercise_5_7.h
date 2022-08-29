@@ -4,6 +4,8 @@
 // Problem Statement: Rewrite readlines to store lines in an array supplied by main, rather than by calling
 // alloc to maintain storage. How much faster is the program?
 
+// Code below. I'm not going to test the speed vs original right now, would like to move forward with reading rest of book.
+
 #include <stdio.h>
 #include <string.h>
 
@@ -23,11 +25,25 @@ void qsort(char *lineptr[], int left, int right); //done
 int getline_custom(char s[], int lim); //done
 char *alloc(int n); //done
 int readlines(char *lineptr[], int maxlines); //done
+int readlines_new(char *lineptr[], int maxlines, char out_array[][MAXLEN]);
 
 int example() {
+//    int nlines;
+//
+//    if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
+//        qsort(lineptr, 0, nlines - 1);
+//        writelines(lineptr, nlines);
+//        return 0;
+//    } else {
+//        printf("error: input too big to sort\n");
+//        return 1;
+//    }
+
     int nlines;
 
-    if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
+    char out_array[MAXLINES][MAXLEN];
+
+    if ((nlines = readlines_new(lineptr, MAXLINES, out_array)) >= 0) {
         qsort(lineptr, 0, nlines - 1);
         writelines(lineptr, nlines);
         return 0;
@@ -99,6 +115,21 @@ int readlines(char *lineptr[], int maxlines)
             line[len - 1] = '\0';
             strcpy(p, line);
             lineptr[nlines++] = p;
+        }
+        return nlines;
+}
+
+int readlines_new(char *lineptr[], int maxlines, char out_array[][MAXLEN]) {
+    int len, nlines;
+
+    nlines = 0;
+    while ((len = getline_custom(out_array[nlines], MAXLEN)) > 0)
+        if (nlines >= maxlines)
+            return -1;
+        else {
+            out_array[nlines][len - 1] = '\0';
+            lineptr[nlines] = out_array[nlines];
+            nlines++;
         }
         return nlines;
 }
